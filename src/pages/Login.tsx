@@ -6,10 +6,13 @@ import { authService } from "../main";
 import toast from "react-hot-toast";
 import { useGoogleLogin } from "@react-oauth/google";
 import { FcGoogle } from "react-icons/fc";
+import { useAppData } from "../context/AppContext";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { setIsAuth, setUser } = useAppData();
 
   // this will take the response from the google login and call the backend login service by passing the code
   const responseGoogle = async (authResult: any) => {
@@ -20,8 +23,13 @@ const Login = () => {
       });
 
       localStorage.setItem("token", result.data.token);
+
       toast.success(result.data.message);
-      navigate("/");
+      setIsAuth(true);
+      setUser(result.data.user);
+      navigate("/", {
+        replace: true,
+      });
     } catch (error) {
       console.log(error);
       toast.error("Problem while login");
