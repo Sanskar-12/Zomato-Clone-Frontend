@@ -1,10 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import { PublicRoute } from "./components/publicRoute";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import SelectRole from "./pages/SelectRole";
 import Navbar from "./components/Navbar";
+import Account from "./pages/Account";
+import { PublicRoute } from "./components/PublicRoute";
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
             <Route path="/select-role" element={<SelectRole />} />
+            <Route path="/account" element={<Account />} />
           </Route>
         </Routes>
       </BrowserRouter>
