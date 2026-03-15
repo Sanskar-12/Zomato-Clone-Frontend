@@ -79,6 +79,8 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         });
 
         setCity("Failed to load");
+      } finally {
+        setLoadingLocation(false);
       }
     });
   }, []);
