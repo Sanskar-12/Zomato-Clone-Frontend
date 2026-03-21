@@ -42,3 +42,15 @@ export interface IRestaurant {
   isOpen: boolean;
   createdAt: Date;
 }
+
+export interface IMenuItem {
+  restaurantId: string;
+  _id: string;
+  name: string;
+  description: string;
+  image?: string;
+  price: number;
+  isAvailable: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
