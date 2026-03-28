@@ -5,6 +5,7 @@ import type { IRestaurant } from "../types";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { restaurantService } from "../main";
+import RestaurantCard from "../components/RestaurantCard";
 
 const Home = () => {
   const { location } = useAppData();
@@ -38,7 +39,7 @@ const Home = () => {
 
   const fetchRestaurants = async () => {
     if (!location?.latitude || !location.longitude) {
-      toast.error("You need to give permission of you location to continue");
+      // toast.error("You need to give permission of you location to continue");
       return;
     }
 
@@ -80,7 +81,37 @@ const Home = () => {
     );
   }
 
-  return <div></div>;
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-6">
+      {restaurants.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 md:grid-cols-4">
+          {restaurants.map((rest) => {
+            const [restlong, restlat] = rest.autoLocation.coordinates;
+
+            const distance = getDistanceKm(
+              location.latitude,
+              location.longitude,
+              restlat,
+              restlong,
+            );
+
+            return (
+              <RestaurantCard
+                key={rest?._id}
+                id={rest?._id}
+                name={rest?.name}
+                image={rest?.image ?? ""}
+                distance={distance.toString()}
+                isOpen={rest?.isOpen}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <p className="text-center text-gray-500">No restaurant found</p>
+      )}
+    </div>
+  );
 };
 
 export default Home;
