@@ -7,6 +7,7 @@ import { VscLoading } from "react-icons/vsc";
 import axios from "axios";
 import { restaurantService } from "../main";
 import toast from "react-hot-toast";
+import { useAppData } from "../context/AppContext";
 
 interface MenuItemsProps {
   items: IMenuItem[];
@@ -16,6 +17,7 @@ interface MenuItemsProps {
 
 const MenuItems = ({ items, onItemDeleted, isSeller }: MenuItemsProps) => {
   const [loadingItemId, setLoadingItemId] = useState<string | null>(null);
+  const { fetchCart } = useAppData();
 
   const handleDelete = async (itemId: string) => {
     const confirm = window.confirm("Are you sure you want to delete this item");
@@ -33,6 +35,33 @@ const MenuItems = ({ items, onItemDeleted, isSeller }: MenuItemsProps) => {
     } catch (error) {
       console.log(error);
       toast.error("Failed to delete item");
+    }
+  };
+
+  const addToCart = async (restaurantId: string, itemId: string) => {
+    try {
+      setLoadingItemId(itemId);
+
+      const { data } = await axios.post(
+        `${restaurantService}/api/cart/add`,
+        {
+          restaurantId,
+          itemId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+
+      toast.success(data.message);
+      fetchCart();
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    } finally {
+      setLoadingItemId(null);
     }
   };
 
@@ -115,7 +144,7 @@ const MenuItems = ({ items, onItemDeleted, isSeller }: MenuItemsProps) => {
                   {!isSeller && (
                     <button
                       disabled={!item.isAvailable || isLoading}
-                      onClick={() => {}}
+                      onClick={() => addToCart(item.restaurantId, item._id)}
                       className={`flex items-center justify-center rounded-lg p-2 ${
                         !item.isAvailable || isLoading
                           ? "cursor-not-allowed text-gray-400"
