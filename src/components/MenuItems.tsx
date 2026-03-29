@@ -64,6 +64,7 @@ const MenuItems = ({ items, onItemDeleted, isSeller }: MenuItemsProps) => {
           return (
             <div
               className={`relative flex gap-4 rounded-lg bg-white p-4 shadow-sm transition ${!item?.isAvailable ? "opacity-70" : ""}`}
+              key={item?._id}
             >
               <div className="relative shrink-0">
                 <img

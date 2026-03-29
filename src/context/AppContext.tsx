@@ -1,8 +1,8 @@
 import axios from "axios";
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
-import { authService } from "../main";
-import type { AppContextType, LocationData, User } from "../types";
+import { authService, restaurantService } from "../main";
+import type { AppContextType, ICart, LocationData, User } from "../types";
 import toast from "react-hot-toast";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -15,6 +15,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuth, setIsAuth] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [cart, setCart] = useState<ICart[]>([]);
+  const [subtotal, setSubtotal] = useState(0);
+  const [quantity, setQuantity] = useState(0);
   const [location, setLocation] = useState<LocationData | null>(null);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [city, setCity] = useState("Fetching Location...");
@@ -39,9 +42,35 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     }
   }
 
+  async function fetchCart() {
+    if (!user || user.role !== "customer") {
+      return;
+    }
+
+    try {
+      const { data } = await axios.get(`${restaurantService}/api/cart/all`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      setCart(data.cart || []);
+      setSubtotal(data.subtotal || 0);
+      setQuantity(data.cartLength || 0);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    if (user && user.role === "customer") {
+      fetchCart();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -97,6 +126,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         location,
         loadingLocation,
         city,
+        cart,
+        fetchCart,
+        subtotal,
+        quantity,
       }}
     >
       {children}
