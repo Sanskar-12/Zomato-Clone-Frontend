@@ -5,6 +5,7 @@ import App from "./App.tsx";
 import { Toaster } from "react-hot-toast";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AppProvider } from "./context/AppContext.tsx";
+import "leaflet/dist/leaflet.css";
 
 export const authService = "http://localhost:4000";
 export const restaurantService = "http://localhost:4001";
