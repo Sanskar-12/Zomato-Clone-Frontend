@@ -200,6 +200,7 @@ const Cart = () => {
         <button
           className="mt-3 w-full rounded-lg bg-[#232222] py-3 text-sm font-semibold text-white hover:bg-gray-900 flex justify-center items-center gap-3"
           onClick={clearCart}
+          disabled={clearingCart}
         >
           Clear Cart <TbTrash size={16} />
         </button>
