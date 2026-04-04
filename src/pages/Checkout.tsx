@@ -157,6 +157,7 @@ const Checkout = () => {
             });
 
             toast.success("Payment Successful");
+            fetchCart();
             navigate("/paymentsuccess/" + response.razorpay_payment_id);
           } catch (error) {
             console.log(error);
@@ -170,7 +171,6 @@ const Checkout = () => {
 
       const razorpay = new (window as any).Razorpay(options);
       razorpay.open();
-      fetchCart();
     } catch (error) {
       console.log(error);
       toast.error("Payment failed, Please refresh the page");
@@ -288,6 +288,18 @@ const Checkout = () => {
             <BiCreditCard size={18} />
           )}
           Pay With Razorpay
+        </button>
+        <button
+          disabled={!selectedAddressId || loadingStripe || creatingOrder}
+          onClick={payWithStripe}
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-black py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
+        >
+          {loadingStripe ? (
+            <BiLoader size={18} className="animate-spin" />
+          ) : (
+            <BiCreditCard size={18} />
+          )}
+          Pay With Stripe
         </button>
       </div>
     </div>
