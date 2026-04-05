@@ -14,7 +14,7 @@ interface Address {
 }
 
 const Checkout = () => {
-  const { cart, subtotal, quantity, location, fetchCart } = useAppData();
+  const { cart, subtotal, quantity, location } = useAppData();
   const navigate = useNavigate();
 
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -157,7 +157,6 @@ const Checkout = () => {
             });
 
             toast.success("Payment Successful");
-            fetchCart();
             navigate("/paymentsuccess/" + response.razorpay_payment_id);
           } catch (error) {
             console.log(error);
@@ -187,7 +186,6 @@ const Checkout = () => {
       if (!order) return;
 
       console.log("Stripe checkout", order);
-      fetchCart();
     } catch (error) {
       console.log(error);
       toast.error("Payment failed, Please refresh the page");
