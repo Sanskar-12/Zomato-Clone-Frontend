@@ -6,6 +6,7 @@ import axios from "axios";
 import { restaurantService } from "../main";
 import toast from "react-hot-toast";
 import { BiBell } from "react-icons/bi";
+import OrderCard from "./OrderCard";
 
 interface RestaurantProps {
   restaurantId: string;
@@ -141,7 +142,11 @@ const RestaurantOrders = ({ restaurantId }: RestaurantProps) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {activeOrders.map((order) => (
-              <p key={order._id}>{order?._id}</p>
+              <OrderCard
+                key={order?._id}
+                order={order}
+                onStatusUpdate={fetchOrders}
+              />
             ))}
           </div>
         )}
@@ -155,7 +160,11 @@ const RestaurantOrders = ({ restaurantId }: RestaurantProps) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {completedOrders.map((order) => (
-              <p key={order._id}>{order?._id}</p>
+              <OrderCard
+                key={order?._id}
+                order={order}
+                onStatusUpdate={fetchOrders}
+              />
             ))}
           </div>
         )}
