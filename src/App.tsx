@@ -26,33 +26,31 @@ const App = () => {
 
   return (
     <>
-      <BrowserRouter>
-        <Navbar />
-        <Routes>
-          {/* Public Routes */}
-          <Route element={<PublicRoute />}>
-            <Route path="/login" element={<Login />} />
-          </Route>
+      <Navbar />
+      <Routes>
+        {/* Public Routes */}
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<Login />} />
+        </Route>
 
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/address" element={<AddAddressPage />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/order/:orderId" element={<OrderDetailsPage />} />
-            <Route
-              path="/paymentsuccess/:paymentId"
-              element={<PaymentSuccess />}
-            />
-            <Route path="/ordersuccess" element={<OrderSuccess />} />
-            <Route path="/restaurant/:id" element={<RestaurantPage />} />
-            <Route path="/select-role" element={<SelectRole />} />
-            <Route path="/account" element={<Account />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/address" element={<AddAddressPage />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/order/:orderId" element={<OrderDetailsPage />} />
+          <Route
+            path="/paymentsuccess/:paymentId"
+            element={<PaymentSuccess />}
+          />
+          <Route path="/ordersuccess" element={<OrderSuccess />} />
+          <Route path="/restaurant/:id" element={<RestaurantPage />} />
+          <Route path="/select-role" element={<SelectRole />} />
+          <Route path="/account" element={<Account />} />
+        </Route>
+      </Routes>
     </>
   );
 };

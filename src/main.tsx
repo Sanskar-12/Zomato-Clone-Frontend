@@ -7,6 +7,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AppProvider } from "./context/AppContext.tsx";
 import "leaflet/dist/leaflet.css";
 import { SocketProvider } from "./context/SocketContext.tsx";
+import { BrowserRouter } from "react-router-dom";
 
 export const authService = "http://localhost:4000";
 export const restaurantService = "http://localhost:4001";
@@ -18,7 +19,9 @@ createRoot(document.getElementById("root")!).render(
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <AppProvider>
         <SocketProvider>
-          <App />
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
         </SocketProvider>
       </AppProvider>
       <Toaster />

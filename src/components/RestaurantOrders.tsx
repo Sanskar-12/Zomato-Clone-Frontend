@@ -27,7 +27,6 @@ const RestaurantOrders = ({ restaurantId }: RestaurantProps) => {
   const [audioUnlocked, setAudioUnlocked] = useState(false);
 
   const { socket } = useSocket();
-  console.log(socket);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const unlockAudio = () => {
