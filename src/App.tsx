@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -16,12 +16,25 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import OrderSuccess from "./pages/OrderSuccess";
 import Orders from "./pages/Orders";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
+import RiderDashboard from "./pages/RiderDashboard";
 
 const App = () => {
-  const { user } = useAppData();
+  const { user, loading } = useAppData();
+
+  if (loading) {
+    return (
+      <h1 className="text-2xl font-bold text-red-500 text-center mt-56">
+        Loading...
+      </h1>
+    );
+  }
 
   if (user && user.role === "seller") {
     return <Restaurant />;
+  }
+
+  if (user && user.role === "rider") {
+    return <RiderDashboard />;
   }
 
   return (
