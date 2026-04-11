@@ -58,6 +58,20 @@ const Orders = () => {
     };
   }, [socket]);
 
+  useEffect(() => {
+    if (!socket) return;
+
+    const onUpdateOrder = () => {
+      fetchOrders();
+    };
+
+    socket.on("order:rider_assigned", onUpdateOrder);
+
+    return () => {
+      socket.off("order:rider_assigned", onUpdateOrder);
+    };
+  }, [socket]);
+
   if (loading) {
     return <p className="text-center text-gray-500">Loading Orders...</p>;
   }
