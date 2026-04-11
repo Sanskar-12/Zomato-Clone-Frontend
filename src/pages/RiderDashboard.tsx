@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppData } from "../context/AppContext";
 import { useSocket } from "../context/SocketContext";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { riderService } from "../main";
 import { BiUpload } from "react-icons/bi";
+import audio from "../assets/rider_order.mp3";
+import type { IOrder } from "../types";
 
 export interface IRider {
   _id: string;
@@ -28,6 +30,25 @@ const RiderDashboard = () => {
   const [drivingLicenseNumber, setDrivingLicenseNumber] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const [incomingOrders, setIncomingOrders] = useState<string[]>([]);
+  const [currentOrder, setCurrentOrder] = useState<IOrder | null>(null);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const unlockAudio = async () => {
+    try {
+      if (!audioRef.current) return;
+
+      await audioRef.current.play();
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setAudioUnlocked(true);
+      toast.success("Sound Enabled");
+    } catch (error) {
+      toast.error("Tap again to enable sound");
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -124,6 +145,38 @@ const RiderDashboard = () => {
       }
     });
   };
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const onOrderAvailable = ({ orderId }: { orderId: string }) => {
+      setIncomingOrders((prev) =>
+        prev.includes(orderId) ? prev : [...prev, orderId],
+      );
+
+      if (audioUnlocked && audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch((err) => {
+          console.error("Audio play failed: ", err);
+        });
+      }
+
+      setTimeout(() => {
+        setIncomingOrders((prev) => prev.filter((id) => id !== orderId));
+      }, 10000);
+    };
+
+    socket.on("order:available", onOrderAvailable);
+
+    return () => {
+      socket.off("order:available", onOrderAvailable);
+    };
+  }, [socket, audioUnlocked]);
+
+  useEffect(() => {
+    audioRef.current = new Audio(audio);
+    audioRef.current.preload = "auto";
+  }, []);
 
   useEffect(() => {
     if (user?.role === "rider") {
