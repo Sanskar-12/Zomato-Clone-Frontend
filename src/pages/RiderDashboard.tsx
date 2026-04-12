@@ -4,9 +4,10 @@ import { useSocket } from "../context/SocketContext";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { riderService } from "../main";
-import { BiUpload } from "react-icons/bi";
+import { BiBell, BiUpload } from "react-icons/bi";
 import audio from "../assets/rider_order.mp3";
 import type { IOrder } from "../types";
+import RiderOrderRequest from "../components/RiderOrderRequest";
 
 export interface IRider {
   _id: string;
@@ -146,6 +147,28 @@ const RiderDashboard = () => {
     });
   };
 
+  const fetchCurrentOrder = async () => {
+    try {
+      const { data } = await axios.get(
+        `${riderService}/api/rider/order/current`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+
+      setCurrentOrder(data.order);
+    } catch (error) {
+      console.log(error);
+      setCurrentOrder(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentOrder();
+  }, []);
+
   useEffect(() => {
     if (!socket) return;
 
@@ -276,12 +299,12 @@ const RiderDashboard = () => {
 
           <div>
             <p className="text-blue-400">
-              Please be within a 500 m radius of any restaurant (which we call
-              as hotspot) before going online as a rider to receive orders.
+              Please be within a 2 km radius of any restaurant (which we call as
+              hotspot) before going online as a rider to receive orders.
             </p>
           </div>
 
-          {profile.isVerified && (
+          {profile.isVerified && !currentOrder && (
             <button
               onClick={toggleAvailability}
               disabled={toggling}
@@ -296,6 +319,46 @@ const RiderDashboard = () => {
           )}
         </div>
       </div>
+
+      {!audioUnlocked && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">
+              <BiBell size={15} />
+            </span>
+            <div>
+              <p className="font-medium text-blue-900">
+                Enable Sound Notification
+              </p>
+              <p className="text-sm text-blue-700">
+                Get Notified when new orders arrive
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={unlockAudio}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition"
+          >
+            Enable Sound
+          </button>
+        </div>
+      )}
+
+      {profile.isAvailable && incomingOrders.length > 0 && (
+        <div className="mx-auto max-w-md px-4 space-y-3">
+          <h3 className="font-semibold text-gray-700">Incoming Orders</h3>
+          {incomingOrders.map((id) => (
+            <RiderOrderRequest
+              key={id}
+              orderId={id}
+              onAccepted={() => {
+                fetchProfile();
+                fetchCurrentOrder();
+              }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
