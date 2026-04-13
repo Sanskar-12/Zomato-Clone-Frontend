@@ -5,6 +5,7 @@ import type { IOrder } from "../types";
 import toast from "react-hot-toast";
 import { restaurantService } from "../main";
 import axios from "axios";
+import UserOrderMap from "../components/UserOrderMap";
 
 const OrderDetailsPage = () => {
   const { orderId } = useParams();
@@ -12,6 +13,9 @@ const OrderDetailsPage = () => {
 
   const [order, setOrder] = useState<IOrder | null>(null);
   const [loading, setLoading] = useState(true);
+  const [riderLocation, setRiderLocation] = useState<[number, number] | null>(
+    null,
+  );
 
   const fetchOrder = async () => {
     try {
@@ -34,6 +38,20 @@ const OrderDetailsPage = () => {
   };
 
   useEffect(() => {
+    if (!socket) return;
+
+    const onUpdateOrder = () => {
+      fetchOrder();
+    };
+
+    socket.on("order:rider_assigned", onUpdateOrder);
+
+    return () => {
+      socket.off("order:rider_assigned", onUpdateOrder);
+    };
+  }, [socket]);
+
+  useEffect(() => {
     fetchOrder();
   }, [orderId]);
 
@@ -48,6 +66,31 @@ const OrderDetailsPage = () => {
 
     return () => {
       socket.off("order:update", onOrderUpdate);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket || !orderId) return;
+
+    socket.emit("join", `user:${order?.userId}`);
+
+    return () => {
+      socket.emit("leave", `user:${order?.userId}`);
+    };
+  }, [socket, orderId]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const onRiderLocation = ({ latitude, longitude }: any) => {
+      console.log("Rider Location:", latitude, longitude);
+      setRiderLocation([latitude, longitude]);
+    };
+
+    socket.on("rider:location", onRiderLocation);
+
+    return () => {
+      socket.off("rider:location", onRiderLocation);
     };
   }, [socket]);
 
@@ -115,6 +158,19 @@ const OrderDetailsPage = () => {
           Payment Status: {order.paymentStatus}
         </p>
       </div>
+
+      {(order.status === "rider_assigned" || order.status === "picked_up") &&
+        (riderLocation ? (
+          <UserOrderMap
+            riderLocation={riderLocation}
+            deliveryLocation={[
+              order.deliveryAddress.latitude!,
+              order.deliveryAddress.longitude!,
+            ]}
+          />
+        ) : (
+          <p>Waiting for rider location</p>
+        ))}
     </div>
   );
 };
