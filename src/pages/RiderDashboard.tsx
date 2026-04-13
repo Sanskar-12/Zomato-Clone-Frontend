@@ -8,6 +8,7 @@ import { BiBell, BiUpload } from "react-icons/bi";
 import audio from "../assets/rider_order.mp3";
 import type { IOrder } from "../types";
 import RiderOrderRequest from "../components/RiderOrderRequest";
+import RiderCurrentOrder from "../components/RiderCurrentOrder";
 
 export interface IRider {
   _id: string;
@@ -357,6 +358,15 @@ const RiderDashboard = () => {
               }}
             />
           ))}
+        </div>
+      )}
+
+      {currentOrder && (
+        <div className="mx-auto max-w-md px-4 space-y-4">
+          <RiderCurrentOrder
+            order={currentOrder}
+            onStatusUpdate={fetchCurrentOrder}
+          />
         </div>
       )}
     </div>
