@@ -68,8 +68,7 @@ const LocateMeButton = ({
   return (
     <button
       onClick={locateUser}
-      className="absolute right-3 top-3 z-1000 flex items-center gap-2
-rounded-lg bg-white px-3 py-2 text-sm shadow hover:bg-gray-100"
+      className="absolute right-3 top-3 z-1000 flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm shadow hover:bg-gray-100"
     >
       <LuLocateFixed size={16} />
       Use current location
